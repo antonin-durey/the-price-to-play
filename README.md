@@ -1,5 +1,7 @@
 # The price to play
 
+**Artifact for The Web Conference submission #3001 "The Price to Play: a Privacy Analysis of Free and Paid Games in the Android Ecosystem"**
+
 This repository contains 4 resources:
 
 - `app_ids.csv` contains the list of game IDs we used for our study, and the source we used to collect the game files (either AndroZoo or Google's Play Pass)
