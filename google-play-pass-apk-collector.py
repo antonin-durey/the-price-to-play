@@ -4,7 +4,7 @@ import subprocess
 import json
 import time
 
-APK_FOLDERS = "data/apk"
+APK_FOLDERS = 'data/play_pass_apks'
 
 FILEPATH = 'app_ids.csv'
 
@@ -24,41 +24,40 @@ SLEEPING_TIME_BETWEEN_APPS = 60 # in seconds
 
 LIMIT_DOWNLOAD_TIME = 120 # in seconds
 
-
 def installAppShortName(appID):
     os.system("adb shell am start -a android.intent.action.VIEW -d 'market://details?id={}'".format(appID))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_small_length_name)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in install_small_length_name)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
 
 def installAppLongName(appID):
     os.system("adb shell am start -a android.intent.action.VIEW -d 'market://details?id={}'".format(appID))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_normal_length_name)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in install_normal_length_name)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
 
 def installAppVeryLongName(appID):
     os.system("adb shell am start -a android.intent.action.VIEW -d 'market://details?id={}'".format(appID))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
-    os.system('adb shell input tap {}'.format(' '.join(install_long_length_name)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in install_long_length_name)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
 
 def uninstallAppShortName():
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_small_length_name)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in uninstall_small_length_name)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_confirmation_coordinates)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in uninstall_confirmation_coordinates)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
 
 def uninstallAppLongName():
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_normal_length_name)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in uninstall_normal_length_name)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_confirmation_coordinates)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in uninstall_confirmation_coordinates)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
 
 def uninstallAppVeryLongName():
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_long_length_name)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in uninstall_long_length_name)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
-    os.system('adb shell input tap {}'.format(' '.join(uninstall_confirmation_coordinates)))
+    os.system('adb shell input tap {}'.format(' '.join(str(x) for x in uninstall_confirmation_coordinates)))
     time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
 
 def wait_and_extract(appID, LIMIT_SLEPT):
@@ -70,8 +69,8 @@ def wait_and_extract(appID, LIMIT_SLEPT):
     slept = 0
     while subprocess_return == "" and slept < LIMIT_SLEPT:
         # Apk has not been downloaded yet, so we wait and we retry
-        time.sleep(timeToSleep)
-        slept = slept + timeToSleep
+        time.sleep(SLEEPING_TIME_BETWEEN_ACTIONS)
+        slept = slept + SLEEPING_TIME_BETWEEN_ACTIONS
         p = subprocess.Popen('adb shell pm list packages -f | grep {}'.format(appID), shell=True, stdout=subprocess.PIPE)
         subprocess_return = p.stdout.read().decode('utf-8')
     if slept >= LIMIT_SLEPT:
@@ -80,7 +79,7 @@ def wait_and_extract(appID, LIMIT_SLEPT):
     INDEX_SUFFIX = len(subprocess_return) - (len(TO_REMOVE_SUFFIX) + 1)
     filepath = subprocess_return[INDEX_PREFIX:INDEX_SUFFIX]
     mobile_folderpath = filepath[:filepath.rfind('/')+1]
-    destination_folderpath = "{}/{}".format(APK_FOLDERS, appID)
+    destination_folderpath = "{}".format(APK_FOLDERS)
     os.system("mkdir {}".format(destination_folderpath))
     os.system("adb pull {} {}".format(mobile_folderpath, destination_folderpath))
     return True
@@ -92,6 +91,8 @@ def extract(appID, s):
     INDEX_SUFFIX = len(s) - (len(TO_REMOVE_SUFFIX) + 1)
     path = s[INDEX_PREFIX:INDEX_SUFFIX]
 
+
+os.system('mkdir -p {}'.format(APK_FOLDERS))
 
 with open(FILEPATH) as csvfile:
     reader = csv.DictReader(csvfile)
