@@ -8,7 +8,10 @@ import os
 from joblib import Parallel, delayed
 import shutil
 
-json_output_folder = 'data/json/europe'
+json_output_folder = 'data/json'
+
+FILEPATH = './app_ids.csv'
+
 
 
 def execute_fetch(appName):
@@ -49,15 +52,16 @@ DEFAULT_PARALLELISM = 10
 PARALLELISM = int(os.environ['PARALLEL_WORKERS']) if 'PARALLEL_WORKERS' in os.environ.keys() else DEFAULT_PARALLELISM
 
 with open('error.log', 'w') as error_file:
-    filepath = './app_ids.csv'
+    os.system('mkdir -p {}'.format(json_output_folder))
 
-    with open(filepath) as csvfile:
-        file = csv.reader(csvfile)
+
+    with open(FILEPATH) as csvfile:
+        reader = csv.DictReader(csvfile)
         cnt = 0
         batches = 1
         appIDs = []
-        for row in file:
-            appID = row[0]
+        for row in reader:
+            appID = row['handle']
             appIDs.append(appID)
             cnt += 1
             if cnt % (PARALLELISM+1) == 0:
